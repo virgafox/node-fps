@@ -1,0 +1,19 @@
+body {
+	margin: 0;
+	overflow: hidden;
+}
+
+#pointer {
+	height: 30px;
+	width: 30px;
+	border-radius: 15px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border: 2px solid black;
+	position: absolute;
+	margin-top: -15px;
+	margin-left: -15px;
+	top: 50%;
+	left: 50%;
+}
+

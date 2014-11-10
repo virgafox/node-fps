@@ -1,0 +1,21 @@
+extends layout
+
+block head
+	link(rel='stylesheet', href='/includes/css/game_interface.css')
+	script(src='/assets/js/three.min.js')
+	script(src='/assets/js/PointerLockControls.js')
+	script(src='/assets/js/threex.windowresize.js')
+	script(src='/socket.io/socket.io.js')
+
+block content
+	div.modal.fade#modalWindow(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+		.modal-dialog
+			.modal-content
+				.modal-header
+					h4.modal-title#myModalLabel Test FPS
+				.modal-body#modalText
+				.modal-footer
+					button.btn.btn-primary#modalButton(type='button') Start
+	script(src='/includes/js/game_init.js')
+	script(src='/includes/js/game_scene.js')
+	script(src='/includes/js/network.js')
