@@ -16,7 +16,7 @@ if ('pointerLockElement' in document ||
 	'webkitPointerLockElement' in document) { // the browser supports pointerlock
 	
 	// set modal text
-	document.getElementById( 'modalText' ).innerHTML = 'Press Start to enable First Persion View.';
+	document.getElementById( 'modalText' ).innerHTML = 'Press Start to enable First Persion View. W-A-S-D for movement, space for jump.';
 	
 	// add pointer (made in css)
 	var pointer = document.createElement('div');
