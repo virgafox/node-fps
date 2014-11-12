@@ -1,12 +1,15 @@
 // game initialization
 
-var stats, rendererStats;
+var rendererStats;
 var scene, camera, renderer;
 var controls;
 var objects = [];
 var raycaster;
 
 var player = {};
+var players = {};
+
+var eventManager = new EventEmitter();
 
 if ('pointerLockElement' in document || 
 	'mozPointerLockElement' in document || 
@@ -108,6 +111,13 @@ function init() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.shadowMapEnabled = true;
 
+	// webGLrenderer stats using THREEx library
+	rendererStats = new THREEx.RendererStats();
+	rendererStats.domElement.style.position = 'absolute';
+	rendererStats.domElement.style.right = '0px';
+	rendererStats.domElement.style.bottom = '0px';
+	document.body.appendChild( rendererStats.domElement );
+
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
 
 	scene = new THREE.Scene();
@@ -115,8 +125,7 @@ function init() {
 	controls = new THREE.PointerLockControls( camera );
 	scene.add( controls.getObject() );
 	
-	player.pitch = camera.parent;
-	player.yaw = controls.getObject();
+	player = new Player( { controls: controls } );
 
 	raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
 
@@ -138,21 +147,9 @@ function animate() {
 	if ( intersections.length > 0 ) {
 		controls.isOnObject( true );
 	}
-
+	
+	rendererStats.update(renderer);
+	
 	controls.update();
 	renderer.render( scene, camera );
-}
-
-function info() {
-	var webGLRenderer = renderer;
-	console.log("WebGL Renderer");
-	console.log("== Memory =====");
-	console.log("Programs: " + webGLRenderer.info.memory.programs);
-	console.log("Geometries: " + webGLRenderer.info.memory.geometries);
-	console.log("Textures: " + webGLRenderer.info.memory.textures);
-	console.log("== Render =====");
-	console.log("Calls: " + webGLRenderer.info.render.calls);
-	console.log("Vertices: " + webGLRenderer.info.render.vertices);
-	console.log("Faces: " + webGLRenderer.info.render.faces);
-	console.log("Points: " + webGLRenderer.info.render.points);
 }

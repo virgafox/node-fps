@@ -140,6 +140,14 @@ THREE.PointerLockControls = function ( camera ) {
 		}
 
 	}();
+	
+	// START ADDITION FOR NodeFPS
+	var lastRototranslationUpdate = performance.now();
+	var lastRototranslation = {
+		position: yawObject.position.clone(),
+		rotation: new THREE.Vector3(pitchObject.rotation.x, yawObject.rotation.y, 0)
+	}
+	// END ADDITION FOR NodeFPS
 
 	this.update = function () {
 
@@ -177,6 +185,23 @@ THREE.PointerLockControls = function ( camera ) {
 			canJump = true;
 
 		}
+		
+		// START ADDITION FOR NodeFPS
+		if( time - lastRototranslationUpdate > 1000/25 )	{
+			lastRototranslationUpdate = time;
+			var newPosition = yawObject.position.clone();
+			var newRotation = new THREE.Vector3(pitchObject.rotation.x, yawObject.rotation.y, 0);
+			if (!lastRototranslation.position.equals(newPosition) ||
+				!lastRototranslation.rotation.equals(newRotation)) {
+				//console.log('FPVmoved event fired');
+				player.playerData.rototranslation.position = newPosition;
+				player.playerData.rototranslation.rotation = newRotation;
+				lastRototranslation.position = newPosition;
+				lastRototranslation.rotation = newRotation;
+				eventManager.emit('updateRototranslation');
+			}
+		}
+		// END ADDITION FOR NodeFPS
 
 		prevTime = time;
 

@@ -1,10 +1,11 @@
 extends layout
 
-block head
+block head_extra
 	link(rel='stylesheet', href='/includes/css/game_interface.css')
 	script(src='/assets/js/three.min.js')
 	script(src='/assets/js/PointerLockControls.js')
 	script(src='/assets/js/threex.windowresize.js')
+	script(src='/assets/js/threex.rendererstats.js')
 	script(src='/socket.io/socket.io.js')
 
 block content
@@ -12,10 +13,13 @@ block content
 		.modal-dialog
 			.modal-content
 				.modal-header
-					h4.modal-title#myModalLabel Test FPS
+					h4.modal-title#myModalLabel #{title}
 				.modal-body#modalText
 				.modal-footer
-					button.btn.btn-primary#modalButton(type='button') Start
-	script(src='/includes/js/game_init.js')
-	script(src='/includes/js/game_scene.js')
+					a.btn.btn-default(href='/') Back to Index
+					button.btn.btn-success#modalButton(type='button') Start
+	script(src='/includes/js/eventEmitter.js')
+	script(src='/includes/js/player.js')
+	script(src='/includes/js/gameInit.js')
+	script(src='/includes/js/gameScene.js')
 	script(src='/includes/js/network.js')
