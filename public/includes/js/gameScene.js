@@ -92,7 +92,28 @@ function generatePlayerGraphics(player) {
 	
 	//sprite
 	
+	/*
+	var textOptions = {
+		size: 2,
+		height: 0,
+		weight: 'normal',
+		font: 'helvetiker',
+		bevelEnabled: false,
+		curveSegments: 5,
+	};
+	var textGeometry = new THREE.TextGeometry(player.playerData.id, textOptions);
+	var textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+	var text = new THREE.Mesh(textGeometry, textMaterial);
+	*/
 	
+
+    var spriteMaterial = new THREE.SpriteMaterial( { color: 0xff0000 } );
+    var sprite = new THREE.Sprite( spriteMaterial );
+    //sprite.add(text);
+    sprite.position.y = 2;
+    player.playerModel.yawObject.add(sprite);
+
+
 }
 
 // generate graphics for self player
