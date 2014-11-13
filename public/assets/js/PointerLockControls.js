@@ -193,7 +193,7 @@ THREE.PointerLockControls = function ( camera ) {
 			var newRotation = new THREE.Vector3(pitchObject.rotation.x, yawObject.rotation.y, 0);
 			if (!lastRototranslation.position.equals(newPosition) ||
 				!lastRototranslation.rotation.equals(newRotation)) {
-				//console.log('FPVmoved event fired');
+				//console.log('updateRototranslation event fired');
 				player.playerData.rototranslation.position = newPosition;
 				player.playerData.rototranslation.rotation = newRotation;
 				lastRototranslation.position = newPosition;
