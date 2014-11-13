@@ -73,6 +73,7 @@ function generatePlayerGraphics(player) {
 	
 	player.playerModel.pitchObject.add(gun);
 	
+	//head
 	var headGeometry = new THREE.BoxGeometry(2,2,2);
 	var headMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
 	var head = new THREE.Mesh(headGeometry, headMaterial);
@@ -80,6 +81,7 @@ function generatePlayerGraphics(player) {
 	head.receiveShadow = true;
 	player.playerModel.pitchObject.add(head);
 	
+	//body
 	var bodyGeometry = new THREE.BoxGeometry(5,9,1);
 	var bodyMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
 	var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
@@ -87,6 +89,11 @@ function generatePlayerGraphics(player) {
 	body.castShadow = true;
 	body.receiveShadow = true;
 	player.playerModel.yawObject.add(body);
+	
+	//sprite
+	
+	
 }
 
+// generate graphics for self player
 generatePlayerGraphics(player);
