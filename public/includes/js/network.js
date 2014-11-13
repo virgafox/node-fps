@@ -12,7 +12,7 @@ socket.on('gameInitialization', function(data) {
 	for (id in playersData) {
 		var newPlayer = new Player( { playerData: playersData[id] } );
 		players[id] = newPlayer;
-		generatePlayerGraphics(newPlayer);
+		newPlayer.generateGraphics();
 		scene.add(newPlayer.getObject3D());
 		console.log('Initializing existing player with ID: '+newPlayer.playerData.id);
 	}
@@ -24,7 +24,7 @@ socket.on('playerConnected', function(data) {
 	var playerData = data.playerData;
 	var newPlayer = new Player( { playerData: playerData } );
 	players[playerData.id] = newPlayer;
-	generatePlayerGraphics(newPlayer);
+	newPlayer.generateGraphics();
 	scene.add(newPlayer.getObject3D());
 	console.log('Player joined game with ID: '+playerData.id);
 });

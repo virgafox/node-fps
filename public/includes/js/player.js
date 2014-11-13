@@ -56,3 +56,49 @@ Player.prototype.getRototranslation = function() {
 	rototranslation.rotation = new THREE.Vector3(this.playerModel.pitchObject.rotation.x, this.playerModel.yawObject.rotation.y, 0);
 	return rototranslation;
 }
+
+Player.prototype.generateGraphics = function() {
+	//gun
+	var gunGeometry = new THREE.BoxGeometry( 0.5, 0.5, 5 );
+	var gunMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
+	var gun = new THREE.Mesh( gunGeometry, gunMaterial );
+	gun.position.set( 0.5, -1, -2.5 );
+	gun.castShadow = true;
+	gun.receiveShadow = true;
+	
+	var gunPointerGeometry = new THREE.BoxGeometry( 0.1, 0.2, 0.2 );
+	var gunPointer = new THREE.Mesh( gunPointerGeometry, gunMaterial );
+	gunPointer.position.set( 0, 0.35, -2.4 );
+	gunPointer.castShadow = true;
+	gunPointer.receiveShadow = true;
+	gun.add(gunPointer);
+	
+	this.playerModel.pitchObject.add(gun);
+	
+	//head
+	var headGeometry = new THREE.BoxGeometry(2,2,2);
+	var headMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
+	var head = new THREE.Mesh(headGeometry, headMaterial);
+	head.castShadow = true;
+	head.receiveShadow = true;
+	this.playerModel.pitchObject.add(head);
+	
+	//body
+	var bodyGeometry = new THREE.BoxGeometry(5,9,1);
+	var bodyMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
+	var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+	body.position.set( 0, -5.5, 0 );
+	body.castShadow = true;
+	body.receiveShadow = true;
+	this.playerModel.yawObject.add(body);
+	
+	//sprite
+	var dynamicTexture  = new THREEx.DynamicTexture(512,512);
+	dynamicTexture.drawText(player.playerData.id, 32, 256, 'black');
+    var spriteMaterial = new THREE.SpriteMaterial( { map: dynamicTexture.texture, color: 0xffffff } );
+    var sprite = new THREE.Sprite( spriteMaterial );
+    sprite.position.y = 2;
+    this.playerModel.yawObject.add(sprite);
+
+
+}
