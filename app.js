@@ -1,3 +1,5 @@
+console.log('REMEMBER TO START THIS APPLICATION WITH \'npm start\' and not \'node app.js\'');
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
