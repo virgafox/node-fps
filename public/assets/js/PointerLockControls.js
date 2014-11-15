@@ -5,6 +5,41 @@
 THREE.PointerLockControls = function ( camera ) {
 
 	var scope = this;
+	
+	//INTEGRATION OF COLLISION DETECTION
+	var collisionDirections = {
+		front: {
+			rotation: new THREE.Euler(0,0,0),
+			distance: 5
+		},
+		back: {
+			rotation: new THREE.Euler(0,Math.PI,0),
+			distance: 5
+		},
+		left: {
+			rotation: new THREE.Euler(0,Math.PI/2,0),
+			distance: 5
+		},
+		right: {
+			rotation: new THREE.Euler(0,-Math.PI/2,0),
+			distance: 5
+		},
+		up: {
+			rotation: new THREE.Euler(Math.PI/2,0,0),
+			distance: 1		
+		},
+		down: {
+			rotation: new THREE.Euler(-Math.PI/2,0,0),
+			distance: 10		
+		}
+	}
+	
+	var checkCollision = function(raycaster, directionData, obstacles) {
+		
+	}
+	
+	var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+	//END
 
 	camera.rotation.set( 0, 0, 0 );
 
@@ -152,6 +187,18 @@ THREE.PointerLockControls = function ( camera ) {
 	this.update = function () {
 
 		if ( scope.enabled === false ) return;
+		
+		//INTEGRATION OF COLLISION DETECTION
+		
+		this.isOnObject( false );
+		
+		raycaster.ray.origin.copy( this.getObject().position );
+		var intersections = raycaster.intersectObjects( obstacles );
+	
+		if ( intersections.length > 0 ) {
+			this.isOnObject( true );
+		}
+		//END
 
 		var time = performance.now();
 		var delta = ( time - prevTime ) / 1000;

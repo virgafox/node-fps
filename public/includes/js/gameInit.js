@@ -3,8 +3,7 @@
 var rendererStats;
 var scene, camera, renderer;
 var controls;
-var objects = [];
-var raycaster;
+var obstacles = [];
 
 var player = {};
 var players = {};
@@ -123,11 +122,10 @@ function init() {
 	scene = new THREE.Scene();
 
 	controls = new THREE.PointerLockControls( camera );
-	scene.add( controls.getObject() );
-	
 	player = new Player( { controls: controls } );
+	scene.add( player.getObject3D() );
 
-	raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+	//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
 
 	// automatic window resizer using THREEx library
 	var winResize = new THREEx.WindowResize(renderer, camera);
@@ -137,16 +135,17 @@ function init() {
 
 function animate() {
 	requestAnimationFrame( animate );
-
+/*
 	controls.isOnObject( false );
 
+
 	raycaster.ray.origin.copy( controls.getObject().position );
-	raycaster.ray.origin.y -= 10;
 	var intersections = raycaster.intersectObjects( objects );
 
 	if ( intersections.length > 0 ) {
 		controls.isOnObject( true );
 	}
+*/
 	
 	rendererStats.update(renderer);
 	

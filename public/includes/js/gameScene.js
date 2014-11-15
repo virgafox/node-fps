@@ -49,6 +49,7 @@ function generateBox(width, height, depth) {
 }
 
 var box1 = generateBox(20,20,20);
+obstacles.push(box1); //for collision detection
 box1.name = 'box1';
 box1.position.set(20,10,-30);
 scene.add( box1 );

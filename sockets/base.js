@@ -4,7 +4,7 @@ module.exports = function (io) {
 	
 	io.on('connection', function(socket) {
 		
-		console.log('new connection from id: '+socket.id); // log in server console
+		console.log('new connection from id: '+socket.id);
 		
 		socket.emit('gameInitialization', { playersData: playersData } );
 		
@@ -23,10 +23,10 @@ module.exports = function (io) {
 		
 		socket.on('disconnect', function() {
 			socket.broadcast.emit('playerDisconnected', { playerData: playersData[socket.id] } );
-			console.log('player disconnected - id: ' + playersData[socket.id].id +', nickname: ' + playersData[socket.id].nickname); // log server console
+			console.log('player disconnected - id: ' + playersData[socket.id].id +', nickname: ' + playersData[socket.id].nickname);
 			delete playersData[socket.id];
 		});
-		
+
 	});
 	
 }

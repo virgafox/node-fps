@@ -2,7 +2,8 @@
 	playerInput = {
 		controls: Pointerlockcontrols yaw object,
 		playerData: {
-			id: socket id,
+			id: string,
+			nickname: string,
 			rototranslation: {
 				position: THREE.Vector3,
 				rotation: THREE.Vector3
@@ -76,33 +77,35 @@ Player.prototype.generateGraphics = function() {
 	
 	this.playerModel.pitchObject.add(gun);
 	
-	//head
-	var headGeometry = new THREE.BoxGeometry(2,2,2);
-	var headMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
-	var head = new THREE.Mesh(headGeometry, headMaterial);
-	head.castShadow = true;
-	head.receiveShadow = true;
-	this.playerModel.pitchObject.add(head);
-	
-	//body
-	var bodyGeometry = new THREE.BoxGeometry(5,9,1);
-	var bodyMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
-	var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-	body.position.set( 0, -5.5, 0 );
-	body.castShadow = true;
-	body.receiveShadow = true;
-	this.playerModel.yawObject.add(body);
-	
-	//sprite
-	var canvasWidth = 200;
-	var canvasHeight = 25;
-	var dynamicTexture  = new THREEx.DynamicTexture(canvasWidth,canvasHeight);
-	dynamicTexture.drawText(this.playerData.nickname, undefined, canvasHeight/2, 'black');
-    var spriteMaterial = new THREE.SpriteMaterial( { map: dynamicTexture.texture, color: 0xffffff } );
-    var sprite = new THREE.Sprite( spriteMaterial );
-    sprite.scale.set(canvasWidth/canvasHeight,1,1);
-    sprite.position.y = 2;
-    this.playerModel.yawObject.add(sprite);
+	if (this !== player) { //for the actual player don't render the head, body and sprite.
+		//head
+		var headGeometry = new THREE.BoxGeometry(2,2,2);
+		var headMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
+		var head = new THREE.Mesh(headGeometry, headMaterial);
+		head.castShadow = true;
+		head.receiveShadow = true;
+		this.playerModel.pitchObject.add(head);
+		
+		//body
+		var bodyGeometry = new THREE.BoxGeometry(5,9,1);
+		var bodyMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
+		var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+		body.position.set( 0, -5.5, 0 );
+		body.castShadow = true;
+		body.receiveShadow = true;
+		this.playerModel.yawObject.add(body);
+		
+		//sprite
+		var canvasWidth = 200;
+		var canvasHeight = 25;
+		var dynamicTexture  = new THREEx.DynamicTexture(canvasWidth,canvasHeight);
+		dynamicTexture.drawText(this.playerData.nickname, undefined, canvasHeight/2, 'black');
+	    var spriteMaterial = new THREE.SpriteMaterial( { map: dynamicTexture.texture, color: 0xffffff } );
+	    var sprite = new THREE.Sprite( spriteMaterial );
+	    sprite.scale.set(canvasWidth/canvasHeight,1,1);
+	    sprite.position.y = 2;
+	    this.playerModel.yawObject.add(sprite);
+    }
 
 
 }

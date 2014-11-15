@@ -2,7 +2,7 @@ var socket = io();
 
 socket.on('connect', function() {
 	player.playerData.id = socket.io.engine.id;
-	console.log('Your player ID is: '+socket.io.engine.id+', your nickname: '+player.playerData.nickname);
+	console.log('Hi '+player.playerData.nickname+', welcome to NodeFPS!' );
 });
 
 
@@ -14,7 +14,7 @@ socket.on('gameInitialization', function(data) {
 		players[id] = newPlayer;
 		newPlayer.generateGraphics();
 		scene.add(newPlayer.getObject3D());
-		console.log('Initializing existing player with ID: '+newPlayer.playerData.id);
+		console.log(newPlayer.playerData.nickname+' is already in the game.');
 	}
 
 	socket.emit('playerInitialization', { playerData: player.playerData } );
@@ -26,7 +26,7 @@ socket.on('playerConnected', function(data) {
 	players[playerData.id] = newPlayer;
 	newPlayer.generateGraphics();
 	scene.add(newPlayer.getObject3D());
-	console.log('Player joined game with ID: '+playerData.id);
+	console.log(playerData.nickname+' joined the game.');
 });
 
 socket.on('playerDisconnected', function(data) {
@@ -34,7 +34,7 @@ socket.on('playerDisconnected', function(data) {
 	var oldPlayer = players[playerData.id];
 	scene.remove(oldPlayer.getObject3D());
 	delete players[playerData.id];
-	console.log('Closed connection for player with id: '+playerData.id);
+	console.log(playerData.nickname+' left the game.');
 });
 
 socket.on('playerMoved', function(data) {
