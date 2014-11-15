@@ -48,9 +48,9 @@ function generateBox(width, height, depth) {
 	return box;
 }
 
-var box1 = generateBox(20,10,20);
+var box1 = generateBox(20,20,20);
 box1.name = 'box1';
-box1.position.set(20,5,-30);
+box1.position.set(20,10,-30);
 scene.add( box1 );
 
 // player

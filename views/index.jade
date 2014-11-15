@@ -6,4 +6,8 @@ block content
 			h1= title
 		p.
 			Open Javascript console before pressing start in order to see system messages. Enjoy.
-		a.btn.btn-default(href='/demo') Start DEMO
+		form.form-inline(role='form', method='POST', action='/demo')
+			.input-group
+				input.form-control#nickname(type='text', name='nickname', placeholder='Your Nickname', required='true')
+				span.input-group-btn
+					button.btn.btn-default(type='submit') Start DEMO

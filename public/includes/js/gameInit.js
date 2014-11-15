@@ -109,7 +109,7 @@ function init() {
 	renderer = new THREE.WebGLRenderer();
 	renderer.setClearColor( 0xDDE8EC );
 	renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.shadowMapEnabled = true;
+	renderer.shadowMapEnabled = false;
 
 	// webGLrenderer stats using THREEx library
 	rendererStats = new THREEx.RendererStats();

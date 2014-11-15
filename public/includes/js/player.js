@@ -31,6 +31,7 @@ function Player(playerInput) {
 	if (typeof playerData === 'undefined') {
 		this.playerData = {};
 		this.playerData.id = '';
+		this.playerData.nickname = nickname;
 		this.playerData.rototranslation = this.getRototranslation();
 	} else {
 		this.playerData = playerData;
@@ -93,10 +94,13 @@ Player.prototype.generateGraphics = function() {
 	this.playerModel.yawObject.add(body);
 	
 	//sprite
-	var dynamicTexture  = new THREEx.DynamicTexture(512,512);
-	dynamicTexture.drawText(player.playerData.id, 32, 256, 'black');
+	var canvasWidth = 200;
+	var canvasHeight = 25;
+	var dynamicTexture  = new THREEx.DynamicTexture(canvasWidth,canvasHeight);
+	dynamicTexture.drawText(this.playerData.nickname, undefined, canvasHeight/2, 'black');
     var spriteMaterial = new THREE.SpriteMaterial( { map: dynamicTexture.texture, color: 0xffffff } );
     var sprite = new THREE.Sprite( spriteMaterial );
+    sprite.scale.set(canvasWidth/canvasHeight,1,1);
     sprite.position.y = 2;
     this.playerModel.yawObject.add(sprite);
 

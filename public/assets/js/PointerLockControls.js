@@ -166,6 +166,14 @@ THREE.PointerLockControls = function ( camera ) {
 
 		if ( moveLeft ) velocity.x -= 400.0 * delta;
 		if ( moveRight ) velocity.x += 400.0 * delta;
+		
+		//START ADDITION FOR NodeFPS
+		
+		//block movement on key up for more precision and less network flooding.
+		if (!moveForward && !moveBackward) velocity.z = 0;
+		if (!moveLeft && !moveRight) velocity.x = 0;
+		
+		//END ADDITION FOR NodeFPS
 
 		if ( isOnObject === true ) {
 
@@ -193,7 +201,9 @@ THREE.PointerLockControls = function ( camera ) {
 			var newRotation = new THREE.Vector3(pitchObject.rotation.x, yawObject.rotation.y, 0);
 			if (!lastRototranslation.position.equals(newPosition) ||
 				!lastRototranslation.rotation.equals(newRotation)) {
+				
 				//console.log('updateRototranslation event fired');
+				
 				player.playerData.rototranslation.position = newPosition;
 				player.playerData.rototranslation.rotation = newRotation;
 				lastRototranslation.position = newPosition;

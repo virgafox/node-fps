@@ -4,14 +4,14 @@ module.exports = function (io) {
 	
 	io.on('connection', function(socket) {
 		
-		console.log('player connected - id: '+socket.id); // log in server console
+		console.log('new connection from id: '+socket.id); // log in server console
 		
 		socket.emit('gameInitialization', { playersData: playersData } );
 		
 		socket.on('playerInitialization', function(data) {
 			var playerData = data.playerData;
 			playersData[socket.id] = playerData;
-			console.log('player initialized - id: ' + socket.id);
+			console.log('player initialized - id: ' + playerData.id +', nickname: ' + playerData.nickname);
 			socket.broadcast.emit('playerConnected', { playerData: playerData } );
 		});
 
@@ -23,8 +23,8 @@ module.exports = function (io) {
 		
 		socket.on('disconnect', function() {
 			socket.broadcast.emit('playerDisconnected', { playerData: playersData[socket.id] } );
+			console.log('player disconnected - id: ' + playersData[socket.id].id +', nickname: ' + playersData[socket.id].nickname); // log server console
 			delete playersData[socket.id];
-			console.log('player disconnected - id: '+socket.id); // log server console
 		});
 		
 	});

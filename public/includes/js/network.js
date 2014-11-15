@@ -2,7 +2,7 @@ var socket = io();
 
 socket.on('connect', function() {
 	player.playerData.id = socket.io.engine.id;
-	console.log('Your player ID is: '+socket.io.engine.id);
+	console.log('Your player ID is: '+socket.io.engine.id+', your nickname: '+player.playerData.nickname);
 });
 
 
