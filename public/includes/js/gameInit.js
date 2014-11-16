@@ -105,7 +105,7 @@ animate();
 
 function init() {
 
-	renderer = new THREE.WebGLRenderer();
+	renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setClearColor( 0xDDE8EC );
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.shadowMapEnabled = false;
@@ -121,11 +121,9 @@ function init() {
 
 	scene = new THREE.Scene();
 
-	controls = new THREE.PointerLockControls( camera );
+	controls = new THREE.PointerLockControls( camera, 9, obstacles );
 	player = new Player( { controls: controls } );
 	scene.add( player.getObject3D() );
-
-	//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
 
 	// automatic window resizer using THREEx library
 	var winResize = new THREEx.WindowResize(renderer, camera);
@@ -135,20 +133,10 @@ function init() {
 
 function animate() {
 	requestAnimationFrame( animate );
-/*
-	controls.isOnObject( false );
 
-
-	raycaster.ray.origin.copy( controls.getObject().position );
-	var intersections = raycaster.intersectObjects( objects );
-
-	if ( intersections.length > 0 ) {
-		controls.isOnObject( true );
-	}
-*/
-	
 	rendererStats.update(renderer);
 	
 	controls.update();
+	
 	renderer.render( scene, camera );
 }
