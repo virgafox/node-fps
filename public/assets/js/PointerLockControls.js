@@ -1,22 +1,58 @@
 /**
  * @author mrdoob / http://mrdoob.com/
- *
  * @author virgafox
+ *
+ *
+ * camera = THREE.camera
+ *
+ * parameters = {
+ *  cameraHeight: <float>,
+ *  jumpEnabled: <bool>,
+ *  collisionsEnabled: <bool>,
+ *  horizontalRadius: <float>,
+ *  overHead: <float>,
+ *  stepHeight: <float>,
+ *  obstaclesArray: [ THREE.Object3D ]
+ * }
  */
 
-THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
+THREE.PointerLockControls = function ( camera, parameters ) {
+
+	// Collision detection parameters
+	
+	this.cameraHeight = 10;
+	this.jumpEnabled = true;
+	this.collisionsEnabled = false;
+	this.horizontalRadius = 5;
+	this.overHead = 2.5;
+	this.stepHeight = 2.5;
+	this.obstaclesArray = [];
+	
+	
+	if (typeof parameters !== 'undefined') {
+		for (var key in parameters) {
+			var newValue = parameters[ key ];
+			if ( newValue === undefined ) {
+				console.warn( "THREE.PointerLockControls: '" + key + "' parameter is undefined." );
+				continue;
+			}
+			if (key in this) {
+				this[ key ] = newValue;
+			}
+		} 
+	}
+	
+	// End collision detection parameters
 
 	var scope = this;
 	
-	var cameraHeight = cameraHeight || 10;
-
 	camera.rotation.set( 0, 0, 0 );
 
 	var pitchObject = new THREE.Object3D();
 	pitchObject.add( camera );
 
 	var yawObject = new THREE.Object3D();
-	yawObject.position.y = cameraHeight;
+	yawObject.position.y = this.cameraHeight;
 	yawObject.add( pitchObject );
 
 	var moveForward = false;
@@ -25,6 +61,7 @@ THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
 	var moveRight = false;
 
 	//var isOnObject = false;
+	var jumpEnabled = this.jumpEnabled;
 	var canJump = false;
 
 	var prevTime = performance.now();
@@ -71,7 +108,7 @@ THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
 				break;
 
 			case 32: // space
-				if ( canJump === true ) velocity.y += 250;
+				if ( jumpEnabled === true && canJump === true ) velocity.y += 250;
 				canJump = false;
 				break;
 
@@ -148,32 +185,27 @@ THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
 	
 	//INTEGRATION OF COLLISION DETECTION
 	
-	if (typeof obstaclesArray !== 'undefined') {
-		this.collisionsEnabled = true;
-	} else {
-		this.collisionsEnabled = false;
-	}
-	
 	//collision distances from camera position
+	
+	
 	var collisionDistances = {
-		front: 5,
-		front_left: 3,
-		left: 5,
-		back_left: 3,
-		back: 5,
-		back_right: 3,
-		right: 5,
-		front_right: 3,
-		up: 1,
-		down: cameraHeight
+		front: this.horizontalRadius,
+		front_left: this.horizontalRadius,
+		left: this.horizontalRadius,
+		back_left: this.horizontalRadius,
+		back: this.horizontalRadius,
+		back_right: this.horizontalRadius,
+		right: this.horizontalRadius,
+		front_right: this.horizontalRadius,
+		up: this.overHead,
+		down: this.cameraHeight
 	};
 	
-	
-	
+
 	//max step height (excluded)
-	var stepHeight = 2.5;
 	
-	var verticalCollisionsShift = ( cameraHeight - stepHeight ) / 2;
+	
+	var verticalCollisionsShift = ( this.cameraHeight - this.stepHeight ) / 2;
 	
 	var collisionsRaycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(), 0, 0 );
 	
@@ -222,19 +254,19 @@ THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
 		down: function() { return new THREE.Vector3(0,-1,0); }
 	};
 
-	var checkCollision = function(direction) {
+	var checkCollision = function(direction, obstacles) {
 		collisionsRaycaster.ray.origin.copy( yawObject.position );
 		collisionsRaycaster.ray.direction.copy( computeCollisionDirection[direction]() );
 		collisionsRaycaster.near = 0;
 		collisionsRaycaster.far = collisionDistances[direction];
 		
-		var intersections = collisionsRaycaster.intersectObjects( obstaclesArray );
+		var intersections = collisionsRaycaster.intersectObjects( obstacles );
 		var collision = (intersections.length > 0);
 		
 		if (direction !== 'up' && direction !== 'down') {
 			for (var i = 2; i <= 3; i++) {
 				collisionsRaycaster.ray.origin.y -= verticalCollisionsShift;
-				intersections = collisionsRaycaster.intersectObjects( obstaclesArray );
+				intersections = collisionsRaycaster.intersectObjects( obstacles );
 				collision = collision || (intersections.length > 0);
 			}
 		}
@@ -275,8 +307,10 @@ THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
 		if (this.collisionsEnabled) {
 			
 			for(direction in collisions) {
-				collisions[direction] = checkCollision(direction);
+				collisions[direction] = checkCollision(direction, this.obstaclesArray);
 			}
+			
+			if(collisions.up) console.log('detected up');
 			
 			if (collisions.front || collisions.front_left || collisions.front_right) velocity.z = Math.max( 0, velocity.z );
 			
@@ -290,7 +324,7 @@ THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
 			if (collisions.down) { 
 				velocity.y = Math.max( 0, velocity.y ); 
 				canJump = true;
-				while(checkCollision('down')) {
+				while(checkCollision('down', this.obstaclesArray)) {
 					yawObject.position.y += 0.001;
 				}
 				yawObject.position.y -= 0.001;
@@ -304,16 +338,18 @@ THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
 		yawObject.translateY( velocity.y * delta ); 
 		yawObject.translateZ( velocity.z * delta );
 
+		/*
+		// now integrated in collision detection
 		
-		if ( yawObject.position.y < cameraHeight ) {
+		if ( yawObject.position.y < this.cameraHeight ) {
 
 			velocity.y = 0;
-			yawObject.position.y = cameraHeight;
+			yawObject.position.y = this.cameraHeight;
 
 			canJump = true;
 
 		}
-		
+		*/
 		
 		// START ADDITION FOR NodeFPS
 		// emit event on rototranslation change
@@ -333,7 +369,6 @@ THREE.PointerLockControls = function ( camera, cameraHeight, obstaclesArray ) {
 				eventManager.emit('updateRototranslation');
 			}
 		}
-		
 		// END ADDITION FOR NodeFPS
 
 		prevTime = time;

@@ -64,6 +64,9 @@ box3.position.set(-20,2.5,-30);
 var box4 = generateBox('box4', 20,2,20);
 box4.position.set(-60,1,-30);
 
+var box5 = generateBox('box5', 20,10,20);
+box5.position.set(-100,25,-30);
+
 // player
 
 player.generateGraphics();

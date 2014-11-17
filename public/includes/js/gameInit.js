@@ -121,7 +121,10 @@ function init() {
 
 	scene = new THREE.Scene();
 
-	controls = new THREE.PointerLockControls( camera, 9, obstacles );
+	controls = new THREE.PointerLockControls( camera, {
+		collisionsEnabled: true,
+		obstaclesArray: obstacles
+	});
 	player = new Player( { controls: controls } );
 	scene.add( player.getObject3D() );
 
