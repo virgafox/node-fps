@@ -44,7 +44,25 @@ if ('pointerLockElement' in document ||
 	}
 	
 	var onMouseDown = function() {
-		eventManager.emit('shoot');	
+		var shootRaycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(), 0, 0 );
+		shootRaycaster.ray.origin.copy( controls.getObject().position );
+		shootRaycaster.ray.direction.copy( controls.getDirection(new THREE.Vector3(0,0,0) ));
+		shootRaycaster.near = 0;
+		shootRaycaster.far = 100;
+		var intersections = shootRaycaster.intersectObjects( obstacles );
+		if (intersections.length > 0) {
+			var target = intersections[0].object;
+			if (target.userData.type !== undefined) {
+				if(target.userData.type === 'body') {
+					console.log('HIT! shooted to '+target.name);
+				} else if (target.userData.type === 'head') {
+					console.log('HEADSHOT! shooted to '+target.name);
+				}
+				eventManager.emit('shoot', { type: target.userData.type, targetId: target.userData.ownerId });
+			} else {
+				console.log('MISS! shooted to '+target.name);
+			}
+		}
 	}
 	
 	var pointerlockerror = function ( event ) {

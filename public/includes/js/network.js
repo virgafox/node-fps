@@ -42,7 +42,7 @@ socket.on('playerShooted', function(data) {
 	var shootedId = data.shootedId;
 	var type = data.type;
 	if (shootedId === player.playerData.id) {
-		console.log('you have been shooted to '+type+' by '+players[shooterId].playerData.nickname+'.');
+		console.log('OUCH! you have been shooted to '+type+' by '+players[shooterId].playerData.nickname+'.');
 	}
 });
 
@@ -59,20 +59,6 @@ eventManager.on('updateRototranslation', function() {
 	socket.emit('updateRototranslation', { playerData: player.playerData } );
 });
 
-eventManager.on('shoot', function() {
-	var shootRaycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(), 0, 0 );
-	shootRaycaster.ray.origin.copy( controls.getObject().position );
-	shootRaycaster.ray.direction.copy( controls.getDirection(new THREE.Vector3(0,0,0) ));
-	shootRaycaster.near = 0;
-	shootRaycaster.far = 100;
-	var intersections = shootRaycaster.intersectObjects( obstacles );
-	if (intersections.length > 0) {
-		var target = intersections[0].object;
-		if (target.userData.type !== undefined && (target.userData.type === 'body' || target.userData.type === 'head')) {
-			console.log('hit! shooted: '+target.name);
-			socket.emit('shoot', { type: target.userData.type, targetId: target.userData.ownerId });
-		} else {
-			console.log('miss! shooted: '+target.name);
-		}
-	}
+eventManager.on('shoot', function(data) {
+	socket.emit('shoot', data);
 });
