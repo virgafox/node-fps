@@ -21,6 +21,13 @@ module.exports = function (io) {
 			socket.broadcast.emit('playerMoved', { playerData: playerData } );
 		});
 		
+		socket.on('shoot', function(data) {
+			var type = data.type;
+			var targetId = data.targetId;
+			// update health of shooted player
+			socket.broadcast.emit('playerShooted', { shooterId: socket.id, shootedId: targetId, type: type } );
+		});
+		
 		socket.on('disconnect', function() {
 			socket.broadcast.emit('playerDisconnected', { playerData: playersData[socket.id] } );
 			console.log('player disconnected - id: ' + playersData[socket.id].id +', nickname: ' + playersData[socket.id].nickname);

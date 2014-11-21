@@ -4,6 +4,7 @@ var rendererStats;
 var scene, camera, renderer;
 var controls;
 var obstacles = [];
+var targets = [];
 
 var player = {};
 var players = {};
@@ -12,7 +13,7 @@ var eventManager = new EventEmitter();
 
 if ('pointerLockElement' in document || 
 	'mozPointerLockElement' in document || 
-	'webkitPointerLockElement' in document) { // the browser supports pointerlock
+	'webkitPointerLockElement' in document) { //the browser supports pointerlock
 	
 	// set modal text
 	document.getElementById( 'modalText' ).innerHTML = 'Press Start to enable First Persion View. W-A-S-D for movement, space for jump.';
@@ -32,28 +33,34 @@ if ('pointerLockElement' in document ||
 			 document.webkitPointerLockElement === element ) 
 		{
 			controls.enabled = true;
+			document.addEventListener( 'mousedown', onMouseDown );
 		} 
 		else
 		{
 			controls.enabled = false;
-			$('#modalWindow').modal('show');	// show the modal
+			document.removeEventListener( 'mousedown', onMouseDown );
+			$('#modalWindow').modal('show'); // show the modal
 		}
 	}
-
+	
+	var onMouseDown = function() {
+		eventManager.emit('shoot');	
+	}
+	
 	var pointerlockerror = function ( event ) {
 		alert('pointerlock error');
 	}
 
 	// Hook pointer lock state change events
-	document.addEventListener( 'pointerlockchange', pointerlockchange, false );
-	document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
-	document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
-	document.addEventListener( 'pointerlockerror', pointerlockerror, false );
-	document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
-	document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
+	document.addEventListener('pointerlockchange',pointerlockchange,false);
+	document.addEventListener('mozpointerlockchange',pointerlockchange,false);
+	document.addEventListener('webkitpointerlockchange',pointerlockchange,false);
+	document.addEventListener('pointerlockerror',pointerlockerror,false);
+	document.addEventListener('mozpointerlockerror',pointerlockerror,false);
+	document.addEventListener('webkitpointerlockerror',pointerlockerror,false);
 
 	// when click on the start button enable pointerlock
-	document.getElementById('modalButton').addEventListener( 'click', function ( event ) {
+	document.getElementById('modalButton').addEventListener('click', function(event) {
 		
 		// hide modal
 		$('#modalWindow').modal('hide');
@@ -69,8 +76,8 @@ if ('pointerLockElement' in document ||
 					 document.mozFullscreenElement === element || 
 					 document.mozFullScreenElement === element )
 				{
-					document.removeEventListener( 'fullscreenchange', fullscreenchange );
-					document.removeEventListener( 'mozfullscreenchange', fullscreenchange );
+					document.removeEventListener('fullscreenchange', fullscreenchange);
+					document.removeEventListener('mozfullscreenchange', fullscreenchange);
 					element.requestPointerLock();
 				}
 			}
@@ -117,7 +124,8 @@ function init() {
 	rendererStats.domElement.style.bottom = '0px';
 	document.body.appendChild( rendererStats.domElement );
 
-	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+	var ratio = window.innerWidth / window.innerHeight;
+	camera = new THREE.PerspectiveCamera( 45, ratio, 1, 1000 );
 
 	scene = new THREE.Scene();
 
@@ -136,10 +144,7 @@ function init() {
 
 function animate() {
 	requestAnimationFrame( animate );
-
 	rendererStats.update(renderer);
-	
 	controls.update();
-	
 	renderer.render( scene, camera );
 }

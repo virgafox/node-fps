@@ -6,6 +6,10 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'NodeFPS' });
 });
 
+router.get('/demo', function(req, res) {
+  res.render('index', { title: 'NodeFPS' });
+});
+
 router.post('/demo', function(req, res) {
   res.render('demo', { 
 	  title: 'NodeFPS - Demo',

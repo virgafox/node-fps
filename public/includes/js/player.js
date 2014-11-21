@@ -42,6 +42,24 @@ function Player(playerInput) {
 	this.playerModel.yawObject.name = this.playerData.id;
 }
 
+Player.prototype.shoot = function(obstacles) {
+	var shootRaycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(), 0, 0 );
+	shootRaycaster.ray.origin.copy( this.getObject3D().position );
+	shootRaycaster.ray.direction.copy( controls.getDirection(new THREE.Vector3(0,0,0) ));
+	shootRaycaster.near = 0;
+	shootRaycaster.far = 100;
+	var intersections = shootRaycaster.intersectObjects( obstacles );
+	if (intersections.length > 0) {
+		var target = intersections[0].object;
+		if (target.userData.type !== undefined && (target.userData.type === 'body' || target.userData.type === 'head')) {
+			console.log('hit! shooted: '+target.name);
+			eventManager.emit('shoot', { type: target.userData.type, targetId: target.userData.ownerId });
+		} else {
+			console.log('miss! shooted: '+target.name);
+		}
+	}
+}
+
 Player.prototype.getObject3D = function() {
 	return this.playerModel.yawObject;
 }
@@ -55,11 +73,16 @@ Player.prototype.setRototranslation = function(rototranslation) {
 Player.prototype.getRototranslation = function() {
 	var rototranslation = {};
 	rototranslation.position = this.playerModel.yawObject.position;
-	rototranslation.rotation = new THREE.Vector3(this.playerModel.pitchObject.rotation.x, this.playerModel.yawObject.rotation.y, 0);
+	rototranslation.rotation = new THREE.Vector3(
+		this.playerModel.pitchObject.rotation.x, 
+		this.playerModel.yawObject.rotation.y, 
+		0
+	);
 	return rototranslation;
 }
 
 Player.prototype.generateGraphics = function() {
+	
 	//gun
 	var gunGeometry = new THREE.BoxGeometry( 0.5, 0.5, 5 );
 	var gunMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
@@ -76,14 +99,18 @@ Player.prototype.generateGraphics = function() {
 	gun.add(gunPointer);
 	
 	this.playerModel.pitchObject.add(gun);
-	
-	if (this !== player) { //for the actual player don't render the head, body and sprite.
+			
+	if (this !== player) { 
 		//head
 		var headGeometry = new THREE.BoxGeometry(2,2,2);
 		var headMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
 		var head = new THREE.Mesh(headGeometry, headMaterial);
 		head.castShadow = true;
 		head.receiveShadow = true;
+		head.name = 'head of '+this.playerData.nickname;
+		head.userData.type = 'head';
+		head.userData.ownerId = this.playerData.id;
+		this.playerModel.head = head;
 		this.playerModel.pitchObject.add(head);
 		
 		//body
@@ -93,19 +120,29 @@ Player.prototype.generateGraphics = function() {
 		body.position.set( 0, -5.5, 0 );
 		body.castShadow = true;
 		body.receiveShadow = true;
+		body.name = 'body of '+this.playerData.nickname;
+		body.userData.type = 'body';
+		body.userData.ownerId = this.playerData.id;
+		this.playerModel.body = body;
 		this.playerModel.yawObject.add(body);
 		
 		//sprite
 		var canvasWidth = 200;
 		var canvasHeight = 25;
-		var dynamicTexture  = new THREEx.DynamicTexture(canvasWidth,canvasHeight);
-		dynamicTexture.drawText(this.playerData.nickname, undefined, canvasHeight/2, 'black');
-	    var spriteMaterial = new THREE.SpriteMaterial( { map: dynamicTexture.texture, color: 0xffffff } );
+		var dynTexture = new THREEx.DynamicTexture(canvasWidth,canvasHeight);
+		dynTexture.drawText(
+			this.playerData.nickname,
+			undefined,
+			canvasHeight/2,
+			'black'
+		);
+	    var spriteMaterial = new THREE.SpriteMaterial({ 
+		    map: dynTexture.texture, 
+		    color: 0xffffff 
+		});
 	    var sprite = new THREE.Sprite( spriteMaterial );
 	    sprite.scale.set(canvasWidth/canvasHeight,1,1);
 	    sprite.position.y = 2;
 	    this.playerModel.yawObject.add(sprite);
     }
-
-
 }

@@ -33,7 +33,7 @@ var planeGeometry = new THREE.PlaneGeometry( 500, 500 );
 planeGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 var planeMaterial = new THREE.MeshLambertMaterial( { color: 0x222222, side: THREE.DoubleSide } );
 var plane = new THREE.Mesh( planeGeometry, planeMaterial );
-plane.name = 'Floor';
+plane.name = 'floor';
 obstacles.push(plane);
 plane.receiveShadow = true;
 scene.add( plane );
@@ -65,7 +65,7 @@ var box4 = generateBox('box4', 20,2,20);
 box4.position.set(-60,1,-30);
 
 var box5 = generateBox('box5', 20,10,20);
-box5.position.set(-100,25,-30);
+box5.position.set(-100,30,-30);
 
 // player
 

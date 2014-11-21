@@ -17,14 +17,12 @@
  */
 
 THREE.PointerLockControls = function ( camera, parameters ) {
-
-	// Collision detection parameters
 	
 	this.cameraHeight = 10;
 	this.jumpEnabled = true;
 	this.collisionsEnabled = false;
 	this.horizontalRadius = 5;
-	this.overHead = 2.5;
+	this.overHead = 3;
 	this.stepHeight = 2.5;
 	this.obstaclesArray = [];
 	
@@ -41,8 +39,6 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 			}
 		} 
 	}
-	
-	// End collision detection parameters
 
 	var scope = this;
 	
@@ -60,8 +56,8 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 	var moveLeft = false;
 	var moveRight = false;
 
-	//var isOnObject = false;
 	var jumpEnabled = this.jumpEnabled;
+	var lastJump = performance.now();
 	var canJump = false;
 
 	var prevTime = performance.now();
@@ -74,8 +70,14 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 
 		if ( scope.enabled === false ) return;
 
-		var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-		var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+		var movementX = event.movementX || 
+						event.mozMovementX || 
+						event.webkitMovementX || 
+						0;
+		var movementY = event.movementY || 
+						event.mozMovementY || 
+						event.webkitMovementY || 
+						0;
 
 		yawObject.rotation.y -= movementX * 0.002;
 		pitchObject.rotation.x -= movementY * 0.002;
@@ -108,7 +110,11 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 				break;
 
 			case 32: // space
-				if ( jumpEnabled === true && canJump === true ) velocity.y += 250;
+				var time = performance.now();
+				if ( jumpEnabled === true && canJump === true && (time-lastJump)/1000 > 0.5 ) {
+					velocity.y += 250;
+					lastJump = time;
+				}
 				canJump = false;
 				break;
 
@@ -179,94 +185,79 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 	var lastRototranslationUpdate = performance.now();
 	var lastRototranslation = {
 		position: yawObject.position.clone(),
-		rotation: new THREE.Vector3(pitchObject.rotation.x, yawObject.rotation.y, 0)
+		rotation: new THREE.Vector3( pitchObject.rotation.x, yawObject.rotation.y, 0)
 	}
 	// END ADDITION FOR NodeFPS
 	
 	//INTEGRATION OF COLLISION DETECTION
-	
-	//collision distances from camera position
-	
-	
+		
 	var collisionDistances = {
 		front: this.horizontalRadius,
-		front_left: this.horizontalRadius,
 		left: this.horizontalRadius,
-		back_left: this.horizontalRadius,
 		back: this.horizontalRadius,
-		back_right: this.horizontalRadius,
 		right: this.horizontalRadius,
-		front_right: this.horizontalRadius,
 		up: this.overHead,
 		down: this.cameraHeight
 	};
-	
-
-	//max step height (excluded)
-	
 	
 	var verticalCollisionsShift = ( this.cameraHeight - this.stepHeight ) / 2;
 	
 	var collisionsRaycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(), 0, 0 );
 	
 	var getWalkingDirection = function() {
-
-		// assumes the camera itself is not rotated
-
 		var direction = new THREE.Vector3( 0, 0, -1 );
-		var rotation = new THREE.Euler( 0, 0, 0, "YXZ" );
-
-		return function( v ) {
-
-			rotation.set( 0, yawObject.rotation.y, 0 );
-
-			v.copy( direction ).applyEuler( rotation );
-
-			return v;
-
-		}
-
-	}();
+		var rotation = new THREE.Euler( 0, yawObject.rotation.y, 0, "YXZ" );
+		direction.applyEuler(rotation);
+		return direction;
+	};
 	
 	var collisions = {
 		front: false,
-		front_left: false,
 		left: false,
-		back_left: false,
 		back: false,
-		back_right: false,
 		right: false,
-		front_right: false,
 		up: false,
 		down: false
 	};
 	
-	var computeCollisionDirection = {
-		front: function() { return getWalkingDirection(new THREE.Vector3(0,0,0)).applyEuler(new THREE.Euler(0,0,0)); },
-		front_left: function() { return getWalkingDirection(new THREE.Vector3(0,0,0)).applyEuler(new THREE.Euler(0,Math.PI*1/4,0)); },
-		left: function() { return getWalkingDirection(new THREE.Vector3(0,0,0)).applyEuler(new THREE.Euler(0,Math.PI*2/4,0)); },
-		back_left: function() { return getWalkingDirection(new THREE.Vector3(0,0,0)).applyEuler(new THREE.Euler(0,Math.PI*3/4,0)); },
-		back: function() { return getWalkingDirection(new THREE.Vector3(0,0,0)).applyEuler(new THREE.Euler(0,Math.PI,0)); },
-		back_right: function() { return getWalkingDirection(new THREE.Vector3(0,0,0)).applyEuler(new THREE.Euler(0,-Math.PI*3/4,0)); },
-		right: function() { return getWalkingDirection(new THREE.Vector3(0,0,0)).applyEuler(new THREE.Euler(0,-Math.PI*2/4,0)); },
-		front_right: function() { return getWalkingDirection(new THREE.Vector3(0,0,0)).applyEuler(new THREE.Euler(0,-Math.PI*1/4,0)); },
-		up: function() { return new THREE.Vector3(0,1,0); },
-		down: function() { return new THREE.Vector3(0,-1,0); }
+	var collisionDirection = {
+		front: function() {
+			var dir = getWalkingDirection();
+			return dir.applyEuler(new THREE.Euler(0,0,0));
+		},
+		left: function() {
+			var dir = getWalkingDirection();
+			return dir.applyEuler(new THREE.Euler(0,Math.PI*2/4,0));
+		},
+		back: function() {
+			var dir = getWalkingDirection();
+			return dir.applyEuler(new THREE.Euler(0,Math.PI,0));
+		},
+		right: function() {
+			var dir = getWalkingDirection();
+			return dir.applyEuler(new THREE.Euler(0,-Math.PI*2/4,0));
+		},
+		up: function() {
+			return new THREE.Vector3(0,1,0);
+		},
+		down: function() {
+			return new THREE.Vector3(0,-1,0);
+		}
 	};
 
-	var checkCollision = function(direction, obstacles) {
+	var checkCollision = function(directionName, obstacles) {
 		collisionsRaycaster.ray.origin.copy( yawObject.position );
-		collisionsRaycaster.ray.direction.copy( computeCollisionDirection[direction]() );
+		collisionsRaycaster.ray.direction.copy(collisionDirection[directionName]());
 		collisionsRaycaster.near = 0;
-		collisionsRaycaster.far = collisionDistances[direction];
+		collisionsRaycaster.far = collisionDistances[directionName];
 		
 		var intersections = collisionsRaycaster.intersectObjects( obstacles );
 		var collision = (intersections.length > 0);
 		
-		if (direction !== 'up' && direction !== 'down') {
+		if (directionName !== 'up' && directionName !== 'down') {
 			for (var i = 2; i <= 3; i++) {
 				collisionsRaycaster.ray.origin.y -= verticalCollisionsShift;
-				intersections = collisionsRaycaster.intersectObjects( obstacles );
+				intersections = collisionsRaycaster.intersectObjects(obstacles);
 				collision = collision || (intersections.length > 0);
 			}
 		}
@@ -295,32 +286,28 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 		if ( moveRight ) velocity.x += 400.0 * delta;
 		
 		//START ADDITION FOR NodeFPS
-		
 		//block movement on key up for more precision and less network flooding.
 		if (!moveForward && !moveBackward) velocity.z = 0;
 		if (!moveLeft && !moveRight) velocity.x = 0;
-		
 		//END ADDITION FOR NodeFPS
 		
 		//INTEGRATION OF COLLISION DETECTION
-		
 		if (this.collisionsEnabled) {
 			
 			for(direction in collisions) {
 				collisions[direction] = checkCollision(direction, this.obstaclesArray);
 			}
+						
+			if (collisions.front) velocity.z = Math.max( 0, velocity.z );
 			
-			if(collisions.up) console.log('detected up');
+			if (collisions.left) velocity.x = Math.max( 0, velocity.x );
 			
-			if (collisions.front || collisions.front_left || collisions.front_right) velocity.z = Math.max( 0, velocity.z );
+			if (collisions.back) velocity.z = Math.min( 0, velocity.z );
 			
-			if (collisions.left || collisions.front_left || collisions.back_left) velocity.x = Math.max( 0, velocity.x );
+			if (collisions.right) velocity.x = Math.min( 0, velocity.x );
 			
-			if (collisions.back || collisions.back_left || collisions.back_right) velocity.z = Math.min( 0, velocity.z );
+			if (collisions.up) velocity.y = Math.min( 0, velocity.y );
 			
-			if (collisions.right || collisions.front_right || collisions.back_right) velocity.x = Math.min( 0, velocity.x );
-			
-			if (collisions.up) velocity.y = Math.min( 0, velocity.y );	
 			if (collisions.down) { 
 				velocity.y = Math.max( 0, velocity.y ); 
 				canJump = true;
@@ -331,7 +318,6 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 			}
 					
 		}
-
 		//END INTEGRATION OF COLLISION DETECTION
 
 		yawObject.translateX( velocity.x * delta );
@@ -339,7 +325,8 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 		yawObject.translateZ( velocity.z * delta );
 
 		/*
-		// now integrated in collision detection
+		// old system for not going underground.
+		// now integrated with the collision between observer and ground.
 		
 		if ( yawObject.position.y < this.cameraHeight ) {
 
@@ -353,7 +340,7 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 		
 		// START ADDITION FOR NodeFPS
 		// emit event on rototranslation change
-		if( time - lastRototranslationUpdate > 1000/25 )	{
+		if( time - lastRototranslationUpdate > 1000/25 ) {
 			lastRototranslationUpdate = time;
 			var newPosition = yawObject.position.clone();
 			var newRotation = new THREE.Vector3(pitchObject.rotation.x, yawObject.rotation.y, 0);
