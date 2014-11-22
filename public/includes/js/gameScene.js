@@ -42,7 +42,7 @@ scene.add( plane );
 // objects
 function generateBox(name, width, height, depth) {
 	var boxGeometry = new THREE.BoxGeometry( width, height, depth );
-	var boxMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
+	var boxMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF, side: THREE.DoubleSide } );
 	var box = new THREE.Mesh( boxGeometry, boxMaterial );
 	box.castShadow = true;
 	box.receiveShadow = true;

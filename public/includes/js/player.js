@@ -65,7 +65,9 @@ Player.prototype.getObject3D = function() {
 }
 
 Player.prototype.setRototranslation = function(rototranslation) {
-	this.playerModel.yawObject.position = rototranslation.position;
+	this.playerModel.yawObject.position.x = rototranslation.position.x;
+	this.playerModel.yawObject.position.y = rototranslation.position.y;
+	this.playerModel.yawObject.position.z = rototranslation.position.z;
 	this.playerModel.yawObject.rotation.y = rototranslation.rotation.y;
 	this.playerModel.pitchObject.rotation.x = rototranslation.rotation.x;
 }

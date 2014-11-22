@@ -315,6 +315,8 @@ THREE.PointerLockControls = function ( camera, parameters ) {
 					yawObject.position.y += 0.001;
 				}
 				yawObject.position.y -= 0.001;
+			} else {
+				canJump = false;
 			}
 					
 		}

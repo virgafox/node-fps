@@ -44,9 +44,11 @@ if ('pointerLockElement' in document ||
 	}
 	
 	var onMouseDown = function() {
+		var shootOrigin = controls.getObject().position;
+		var shootDirection = controls.getDirection(new THREE.Vector3(0,0,0));
 		var shootRaycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(), 0, 0 );
-		shootRaycaster.ray.origin.copy( controls.getObject().position );
-		shootRaycaster.ray.direction.copy( controls.getDirection(new THREE.Vector3(0,0,0) ));
+		shootRaycaster.ray.origin.copy(shootOrigin);
+		shootRaycaster.ray.direction.copy(shootDirection);
 		shootRaycaster.near = 0;
 		shootRaycaster.far = 100;
 		var intersections = shootRaycaster.intersectObjects( obstacles );
