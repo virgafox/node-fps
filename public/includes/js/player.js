@@ -43,8 +43,11 @@ function Player(playerInput) {
 }
 
 Player.prototype.shoot = function(obstacles) {
-	var shootOrigin = controls.getObject().position;
-	var shootDirection = controls.getDirection(new THREE.Vector3(0,0,0));
+	var shootOrigin = controls.getObject().position.clone();
+	
+	shootOrigin.y -= 1;
+	
+	var shootDirection = controls.getDirection(new THREE.Vector3(0,0,0)).clone();
 	var shootRaycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(), 0, 0 );
 	shootRaycaster.ray.origin.copy( this.getObject3D().position );
 	shootRaycaster.ray.direction.copy( controls.getDirection(new THREE.Vector3(0,0,0) ));
@@ -52,6 +55,7 @@ Player.prototype.shoot = function(obstacles) {
 	shootRaycaster.far = 100;
 	var intersections = shootRaycaster.intersectObjects( obstacles );
 	if (intersections.length > 0) {
+		shootingAnimation(shootOrigin, intersections[0].point, intersections[0].distance);
 		var target = intersections[0].object;
 		if (target.userData.type !== undefined) {
 			if(target.userData.type === 'body') {
@@ -63,6 +67,9 @@ Player.prototype.shoot = function(obstacles) {
 		} else {
 			console.log('MISS! shooted to '+target.name);
 		}
+	} else {
+		shootingAnimation(shootOrigin, shootRaycaster.ray.at(100), 100);
+		console.log('MISS! shooted to nothing');
 	}
 }
 
