@@ -1,6 +1,6 @@
 // game initialization
 
-var rendererStats;
+var stats0, stats1, rendererStats;
 var scene, camera, renderer;
 var controls;
 var obstacles = [];
@@ -117,6 +117,22 @@ function init() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.shadowMapEnabled = false;
 
+	// fps stats
+	stats0 = new Stats();
+	stats0.setMode(0);
+	stats0.domElement.style.position = 'absolute';
+	stats0.domElement.style.right = '0px';
+	stats0.domElement.style.bottom = '201px';
+	document.body.appendChild( stats0.domElement );
+
+	// ms stats
+	stats1 = new Stats();
+	stats1.setMode(1);
+	stats1.domElement.style.position = 'absolute';
+	stats1.domElement.style.right = '0px';
+	stats1.domElement.style.bottom = '153px';
+	document.body.appendChild( stats1.domElement );
+
 	// webGLrenderer stats using THREEx library
 	rendererStats = new THREEx.RendererStats();
 	rendererStats.domElement.style.position = 'absolute';
@@ -144,7 +160,11 @@ function init() {
 
 function animate() {
 	requestAnimationFrame( animate );
+	
+	stats0.update();
+	stats1.update();
 	rendererStats.update(renderer);
+	
 	controls.update();
 	renderer.render( scene, camera );
 }
