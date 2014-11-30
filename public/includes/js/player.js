@@ -57,15 +57,24 @@ Player.prototype.shoot = function(obstacles) {
 	if (intersections.length > 0) {
 		shootingAnimation(shootOrigin, intersections[0].point, intersections[0].distance);
 		var target = intersections[0].object;
-		if (target.userData.type !== undefined) {
-			if(target.userData.type === 'body') {
+		if (target.userData.playerPart !== undefined) {
+			if(target.userData.playerPart === 'body') {
 				console.log('HIT! shooted to '+target.name);
-			} else if (target.userData.type === 'head') {
+			} else if (target.userData.playerPart === 'head') {
 				console.log('HEADSHOT! shooted to '+target.name);
 			}
-			eventManager.emit('shoot', { type: target.userData.type, targetId: target.userData.ownerId });
+			eventManager.emit('shoot', {
+				impactPoint: intersections[0].point,
+				shootedDetails: {
+					id: target.userData.playerId,
+					part: target.userData.playerPart
+				}
+			});
 		} else {
 			console.log('MISS! shooted to '+target.name);
+			eventManager.emit('shoot', {
+				impactPoint: intersections[0].point
+			});
 		}
 	} else {
 		shootingAnimation(shootOrigin, shootRaycaster.ray.at(100), 100);
@@ -121,8 +130,8 @@ Player.prototype.generateGraphics = function() {
 		head.castShadow = true;
 		head.receiveShadow = true;
 		head.name = 'head of '+this.playerData.nickname;
-		head.userData.type = 'head';
-		head.userData.ownerId = this.playerData.id;
+		head.userData.playerPart = 'head';
+		head.userData.playerId = this.playerData.id;
 		this.playerModel.head = head;
 		this.playerModel.pitchObject.add(head);
 		
@@ -134,8 +143,8 @@ Player.prototype.generateGraphics = function() {
 		body.castShadow = true;
 		body.receiveShadow = true;
 		body.name = 'body of '+this.playerData.nickname;
-		body.userData.type = 'body';
-		body.userData.ownerId = this.playerData.id;
+		body.userData.playerPart = 'body';
+		body.userData.playerId = this.playerData.id;
 		this.playerModel.body = body;
 		this.playerModel.yawObject.add(body);
 		

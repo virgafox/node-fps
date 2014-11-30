@@ -22,10 +22,11 @@ module.exports = function (io) {
 		});
 		
 		socket.on('shoot', function(data) {
-			var type = data.type;
-			var targetId = data.targetId;
+			
 			// update health of shooted player
-			socket.broadcast.emit('playerShooted', { shooterId: socket.id, shootedId: targetId, type: type } );
+			
+			data.shooterId = socket.id; //add shooter id
+			socket.broadcast.emit('playerShooted', data);
 		});
 		
 		socket.on('disconnect', function() {

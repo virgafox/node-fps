@@ -5,7 +5,6 @@ socket.on('connect', function() {
 	console.log('Hi '+player.playerData.nickname+', welcome to NodeFPS!' );
 });
 
-
 socket.on('gameInitialization', function(data) {
 	var playersData = data.playersData;
 
@@ -39,11 +38,23 @@ socket.on('playerMoved', function(data) {
 
 socket.on('playerShooted', function(data) {
 	var shooterId = data.shooterId;
-	var shootedId = data.shootedId;
-	var type = data.type;
-	if (shootedId === player.playerData.id) {
-		console.log('OUCH! you have been shooted to '+type+' by '+players[shooterId].playerData.nickname+'.');
+	var impactPoint = data.impactPoint;
+	if (typeof data.shootedDetails === 'undefined') { // miss
+		console.log(players[shooterId].playerData.nickname+' shooted.');
+	} else { // hit
+		var shootedId = data.shootedDetails.id;
+		var playerPart = data.shootedDetails.part;
+			if (shootedId === player.playerData.id) { // you are the target
+				// TODO: update your health
+				console.log('OUCH! you have been shooted to '+playerPart+' by '+players[shooterId].playerData.nickname+'.');
+			} else { // someone else is the target
+				// TODO: update player health
+				console.log(players[shootedId].playerData.nickname+' has been shooted to '+playerPart+' by '+players[shooterId].playerData.nickname+'.');
+			}
 	}
+	var shootOrigin = players[shooterId].playerModel.yawObject.position.clone();
+	shootOrigin.y -= 1;
+	shootingAnimation(shootOrigin, impactPoint, shootOrigin.distanceTo(impactPoint));
 });
 
 var initPlayer = function(playerData) {

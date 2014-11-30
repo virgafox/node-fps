@@ -105,6 +105,7 @@ var bulletGeometry = new THREE.BoxGeometry(0.5,0.5,0.5);
 var bulletMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF, side: THREE.DoubleSide } );
 var bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
 
+/*
 function shootingAnimation(origin, destination, distance) {
 	var speed = 700 // units/second
 	var newBullet = bullet.clone();
@@ -113,6 +114,21 @@ function shootingAnimation(origin, destination, distance) {
 	var bulletTween = new TWEEN.Tween(newBullet.position)
         .to({x: destination.x, y: destination.y, z: destination.z}, (distance/speed)*1000)
         .onComplete(function(){ scene.remove(newBullet) })
+        .start();
+}
+*/
+
+function shootingAnimation(origin, destination, distance) {
+	var line = new THREE.LineCurve( origin, destination );
+	var tubeGeometry = new THREE.TubeGeometry( line, 2, 0.25, 8, true );
+	var tubeMaterial = new THREE.MeshBasicMaterial( {color: 0xFF0000, transparent: true, opacity: 1} );
+	var tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+	scene.add(tube);
+	
+	var shootingTween = new TWEEN.Tween(tube.material)
+        .to({opacity: 0}, 0.15*1000)
+        .easing( TWEEN.Easing.Cubic.In )
+        .onComplete(function(){ scene.remove(tube) })
         .start();
 }
 
