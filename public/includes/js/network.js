@@ -38,7 +38,7 @@ socket.on('playerMoved', function(data) {
 
 socket.on('playerShooted', function(data) {
 	var shooterId = data.shooterId;
-	var impactPoint = data.impactPoint;
+	var impactPoint = new THREE.Vector3(data.impactPoint.x, data.impactPoint.y, data.impactPoint.z);;
 	if (typeof data.shootedDetails === 'undefined') { // miss
 		console.log(players[shooterId].playerData.nickname+' shooted.');
 	} else { // hit

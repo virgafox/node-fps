@@ -79,6 +79,9 @@ Player.prototype.shoot = function(obstacles) {
 	} else {
 		shootingAnimation(shootOrigin, shootRaycaster.ray.at(100), 100);
 		console.log('MISS! shooted to nothing');
+		eventManager.emit('shoot', {
+				impactPoint: shootRaycaster.ray.at(100)
+		});
 	}
 }
 
