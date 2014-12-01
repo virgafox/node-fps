@@ -120,16 +120,17 @@ function shootingAnimation(origin, destination, distance) {
 
 
 function shootingAnimation(origin, destination, distance) {
-	var line = new THREE.LineCurve( origin, destination );
-	var tubeGeometry = new THREE.TubeGeometry( line, 5, 0.25, 8, true );
-	var tubeMaterial = new THREE.MeshBasicMaterial( {color: 0xFF0000, transparent: true, opacity: 1} );
-	var tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
-	scene.add(tube);
+
+	var lineGeometry = new THREE.Geometry();
+	var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 10, transparent: true, opacity: 1 } );
+	lineGeometry.vertices.push(origin, destination);
+	var line = new THREE.Line(lineGeometry, lineMaterial);
+	scene.add(line);
 	
-	var shootingTween = new TWEEN.Tween(tube.material)
+	var shootingTween = new TWEEN.Tween(line.material)
         .to({opacity: 0}, 0.15*1000)
         .easing( TWEEN.Easing.Cubic.In )
-        .onComplete(function(){ scene.remove(tube) })
+        .onComplete(function(){ scene.remove(line) })
         .start();
 }
 
