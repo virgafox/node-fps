@@ -106,7 +106,8 @@ var bulletGeometry = new THREE.BoxGeometry(0.5,0.5,0.5);
 var bulletMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF, side: THREE.DoubleSide } );
 var bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
 
-function shootingAnimation(origin, destination, distance) {
+function shootingAnimation(origin, destination) {
+	var distance = origin.distanceTo(destination);
 	var speed = 700 // units/second
 	var newBullet = bullet.clone();
 	newBullet.position.copy(origin);
@@ -119,7 +120,7 @@ function shootingAnimation(origin, destination, distance) {
 */
 
 
-function shootingAnimation(origin, destination, distance) {
+function shootingAnimation(origin, destination) {
 
 	var lineGeometry = new THREE.Geometry();
 	var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 10, transparent: true, opacity: 1 } );

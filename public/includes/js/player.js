@@ -55,13 +55,13 @@ Player.prototype.shoot = function(obstacles) {
 	shootRaycaster.far = 100;
 	var intersections = shootRaycaster.intersectObjects( obstacles );
 	if (intersections.length > 0) {
-		shootingAnimation(shootOrigin, intersections[0].point, intersections[0].distance);
+		shootingAnimation(shootOrigin, intersections[0].point);
 		var target = intersections[0].object;
 		if (target.userData.playerPart !== undefined) {
 			if(target.userData.playerPart === 'body') {
-				console.log('HIT! shooted to '+target.name);
+				console.log('HIT! you shooted to '+target.name);
 			} else if (target.userData.playerPart === 'head') {
-				console.log('HEADSHOT! shooted to '+target.name);
+				console.log('HEADSHOT! you shooted to '+target.name);
 			}
 			eventManager.emit('shoot', {
 				impactPoint: intersections[0].point,
@@ -71,14 +71,14 @@ Player.prototype.shoot = function(obstacles) {
 				}
 			});
 		} else {
-			console.log('MISS! shooted to '+target.name);
+			console.log('MISS! you shooted to '+target.name);
 			eventManager.emit('shoot', {
 				impactPoint: intersections[0].point
 			});
 		}
 	} else {
-		shootingAnimation(shootOrigin, shootRaycaster.ray.at(100), 100);
-		console.log('MISS! shooted to nothing');
+		shootingAnimation(shootOrigin, shootRaycaster.ray.at(100));
+		console.log('MISS! you shooted to nothing');
 		eventManager.emit('shoot', {
 				impactPoint: shootRaycaster.ray.at(100)
 		});

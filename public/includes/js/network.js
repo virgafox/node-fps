@@ -40,7 +40,7 @@ socket.on('playerShooted', function(data) {
 	var shooterId = data.shooterId;
 	var impactPoint = new THREE.Vector3(data.impactPoint.x, data.impactPoint.y, data.impactPoint.z);;
 	if (typeof data.shootedDetails === 'undefined') { // miss
-		console.log(players[shooterId].playerData.nickname+' shooted.');
+		console.log(players[shooterId].playerData.nickname+' shooted to nobody.');
 	} else { // hit
 		var shootedId = data.shootedDetails.id;
 		var playerPart = data.shootedDetails.part;
