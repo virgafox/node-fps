@@ -1,24 +1,24 @@
 /*
-	playerInput = {
-		controls: Pointerlockcontrols yaw object,
-		playerData: {
-			id: string,
-			nickname: string,
-			rototranslation: {
-				position: THREE.Vector3,
-				rotation: THREE.Vector3
-			{
-		}
-	}
+playerInput = {
+controls: Pointerlockcontrols yaw object,
+playerData: {
+id: string,
+nickname: string,
+rototranslation: {
+position: THREE.Vector3,
+rotation: THREE.Vector3
+{
+}
+}
 */
 
 function Player(playerInput) {
-	
+
 	var controls = playerInput.controls;
 	var playerData = playerInput.playerData;
-	
+
 	this.playerModel = {};
-	
+
 	if (typeof controls === 'undefined') {
 		this.playerModel.yawObject = new THREE.Object3D();
 		this.playerModel.yawObject.position.y = 10;
@@ -28,7 +28,7 @@ function Player(playerInput) {
 		this.playerModel.yawObject = controls.getObject();
 		this.playerModel.pitchObject = controls.getObject().children[0];
 	}
-	
+
 	if (typeof playerData === 'undefined') {
 		this.playerData = {};
 		this.playerData.id = '';
@@ -37,16 +37,16 @@ function Player(playerInput) {
 	} else {
 		this.playerData = playerData;
 	}
-	
+
 	this.setRototranslation(this.playerData.rototranslation);
 	this.playerModel.yawObject.name = this.playerData.id;
 }
 
 Player.prototype.shoot = function(obstacles) {
 	var shootOrigin = controls.getObject().position.clone();
-	
+
 	shootOrigin.y -= 1;
-	
+
 	var shootDirection = controls.getDirection(new THREE.Vector3(0,0,0)).clone();
 	var shootRaycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(), 0, 0 );
 	shootRaycaster.ray.origin.copy( this.getObject3D().position );
@@ -80,34 +80,34 @@ Player.prototype.shoot = function(obstacles) {
 		shootingAnimation(shootOrigin, shootRaycaster.ray.at(100));
 		console.log('MISS! you shooted to nothing');
 		eventManager.emit('shoot', {
-				impactPoint: shootRaycaster.ray.at(100)
+			impactPoint: shootRaycaster.ray.at(100)
 		});
 	}
-}
+};
 
 Player.prototype.getObject3D = function() {
 	return this.playerModel.yawObject;
-}
+};
 
 Player.prototype.setRototranslation = function(rototranslation) {
 	this.playerModel.yawObject.position.copy(rototranslation.position);
 	this.playerModel.yawObject.rotation.y = rototranslation.rotation.y;
 	this.playerModel.pitchObject.rotation.x = rototranslation.rotation.x;
-}
+};
 
 Player.prototype.getRototranslation = function() {
 	var rototranslation = {};
 	rototranslation.position = this.playerModel.yawObject.position;
 	rototranslation.rotation = new THREE.Vector3(
-		this.playerModel.pitchObject.rotation.x, 
-		this.playerModel.yawObject.rotation.y, 
+		this.playerModel.pitchObject.rotation.x,
+		this.playerModel.yawObject.rotation.y,
 		0
 	);
 	return rototranslation;
-}
+};
 
 Player.prototype.generateGraphics = function() {
-	
+
 	//gun
 	var gunGeometry = new THREE.BoxGeometry( 0.5, 0.5, 5 );
 	var gunMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
@@ -115,17 +115,17 @@ Player.prototype.generateGraphics = function() {
 	gun.position.set( 0.5, -1, -2.5 );
 	gun.castShadow = true;
 	gun.receiveShadow = true;
-	
+
 	var gunPointerGeometry = new THREE.BoxGeometry( 0.1, 0.2, 0.2 );
 	var gunPointer = new THREE.Mesh( gunPointerGeometry, gunMaterial );
 	gunPointer.position.set( 0, 0.35, -2.4 );
 	gunPointer.castShadow = true;
 	gunPointer.receiveShadow = true;
 	gun.add(gunPointer);
-	
+
 	this.playerModel.pitchObject.add(gun);
-			
-	if (this !== player) { 
+
+	if (this !== player) {
 		//head
 		var headGeometry = new THREE.BoxGeometry(2,2,2);
 		var headMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
@@ -137,7 +137,7 @@ Player.prototype.generateGraphics = function() {
 		head.userData.playerId = this.playerData.id;
 		this.playerModel.head = head;
 		this.playerModel.pitchObject.add(head);
-		
+
 		//body
 		var bodyGeometry = new THREE.BoxGeometry(5,9,1);
 		var bodyMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF } );
@@ -150,7 +150,7 @@ Player.prototype.generateGraphics = function() {
 		body.userData.playerId = this.playerData.id;
 		this.playerModel.body = body;
 		this.playerModel.yawObject.add(body);
-		
+
 		//sprite
 		var canvasWidth = 200;
 		var canvasHeight = 25;
@@ -161,13 +161,13 @@ Player.prototype.generateGraphics = function() {
 			canvasHeight/2,
 			'black'
 		);
-	    var spriteMaterial = new THREE.SpriteMaterial({ 
-		    map: dynTexture.texture, 
-		    color: 0xffffff 
+		var spriteMaterial = new THREE.SpriteMaterial({
+			map: dynTexture.texture,
+			color: 0xffffff
 		});
-	    var sprite = new THREE.Sprite( spriteMaterial );
-	    sprite.scale.set(canvasWidth/canvasHeight,1,1);
-	    sprite.position.y = 2;
-	    this.playerModel.yawObject.add(sprite);
-    }
-}
+		var sprite = new THREE.Sprite( spriteMaterial );
+		sprite.scale.set(canvasWidth/canvasHeight,1,1);
+		sprite.position.y = 2;
+		this.playerModel.yawObject.add(sprite);
+	}
+};

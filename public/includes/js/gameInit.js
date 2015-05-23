@@ -12,197 +12,197 @@ var players = {};
 
 var eventManager = new EventEmitter();
 
-if ('pointerLockElement' in document || 
-	'mozPointerLockElement' in document || 
-	'webkitPointerLockElement' in document) { //the browser supports pointerlock
-	
+if ('pointerLockElement' in document ||
+'mozPointerLockElement' in document ||
+'webkitPointerLockElement' in document) { //the browser supports pointerlock
+
 	// set modal text
 	document.getElementById( 'modalText' ).innerHTML = 'Press Start to enable First Persion View. W-A-S-D for movement, space for jump.';
-	
+
 	// add pointer (made in css)
 	var pointer = document.createElement('div');
 	pointer.id = 'pointer';
 	document.body.appendChild(pointer);
-	
+
 	var element = document.body;
 
 	// function called when entering (if) or exiting (else) pointerlock mode.
 	var pointerlockchange = function ( event ) {
 
-		if ( document.pointerLockElement === element || 
-			 document.mozPointerLockElement === element || 
-			 document.webkitPointerLockElement === element ) 
-		{
-			controls.enabled = true;
-			document.addEventListener( 'mousedown', onMouseDown );
-		} 
-		else
-		{
-			controls.enabled = false;
-			document.removeEventListener( 'mousedown', onMouseDown );
-			$('#modalWindow').modal('show'); // show the modal
-		}
-	}
-	
-	var onMouseDown = function() {
-		player.shoot(obstacles);
-	}
-	
-	var pointerlockerror = function ( event ) {
-		alert('pointerlock error');
-	}
+		if ( document.pointerLockElement === element ||
+			document.mozPointerLockElement === element ||
+			document.webkitPointerLockElement === element )
+			{
+				controls.enabled = true;
+				document.addEventListener( 'mousedown', onMouseDown );
+			}
+			else
+			{
+				controls.enabled = false;
+				document.removeEventListener( 'mousedown', onMouseDown );
+				$('#modalWindow').modal('show'); // show the modal
+			}
+		};
 
-	// Hook pointer lock state change events
-	document.addEventListener('pointerlockchange',pointerlockchange,false);
-	document.addEventListener('mozpointerlockchange',pointerlockchange,false);
-	document.addEventListener('webkitpointerlockchange',pointerlockchange,false);
-	document.addEventListener('pointerlockerror',pointerlockerror,false);
-	document.addEventListener('mozpointerlockerror',pointerlockerror,false);
-	document.addEventListener('webkitpointerlockerror',pointerlockerror,false);
+		var onMouseDown = function() {
+			player.shoot(obstacles);
+		};
 
-	// when click on the start button enable pointerlock
-	document.getElementById('modalButton').addEventListener('click', function(event) {
-		
-		// hide modal
-		$('#modalWindow').modal('hide');
+		var pointerlockerror = function ( event ) {
+			alert('pointerlock error');
+		};
 
-		// Ask the browser to lock the pointer
-		element.requestPointerLock = element.requestPointerLock || 
-									 element.mozRequestPointerLock || 
-									 element.webkitRequestPointerLock;
+		// Hook pointer lock state change events
+		document.addEventListener('pointerlockchange',pointerlockchange,false);
+		document.addEventListener('mozpointerlockchange',pointerlockchange,false);
+		document.addEventListener('webkitpointerlockchange',pointerlockchange,false);
+		document.addEventListener('pointerlockerror',pointerlockerror,false);
+		document.addEventListener('mozpointerlockerror',pointerlockerror,false);
+		document.addEventListener('webkitpointerlockerror',pointerlockerror,false);
 
-		if ( /Firefox/i.test( navigator.userAgent ) ) {
-			var fullscreenchange = function ( event ) {
-				if ( document.fullscreenElement === element || 
-					 document.mozFullscreenElement === element || 
-					 document.mozFullScreenElement === element )
-				{
-					document.removeEventListener('fullscreenchange', fullscreenchange);
-					document.removeEventListener('mozfullscreenchange', fullscreenchange);
+		// when click on the start button enable pointerlock
+		document.getElementById('modalButton').addEventListener('click', function(event) {
+
+			// hide modal
+			$('#modalWindow').modal('hide');
+
+			// Ask the browser to lock the pointer
+			element.requestPointerLock = element.requestPointerLock ||
+			element.mozRequestPointerLock ||
+			element.webkitRequestPointerLock;
+
+			if ( /Firefox/i.test( navigator.userAgent ) ) {
+				var fullscreenchange = function ( event ) {
+					if ( document.fullscreenElement === element ||
+						document.mozFullscreenElement === element ||
+						document.mozFullScreenElement === element )
+						{
+							document.removeEventListener('fullscreenchange', fullscreenchange);
+							document.removeEventListener('mozfullscreenchange', fullscreenchange);
+							element.requestPointerLock();
+						}
+					};
+					document.addEventListener( 'fullscreenchange', fullscreenchange, false );
+					document.addEventListener( 'mozfullscreenchange', fullscreenchange, false );
+					element.requestFullscreen = element.requestFullscreen ||
+					element.mozRequestFullscreen ||
+					element.mozRequestFullScreen ||
+					element.webkitRequestFullscreen;
+					element.requestFullscreen();
+				} else {
 					element.requestPointerLock();
 				}
-			}
-			document.addEventListener( 'fullscreenchange', fullscreenchange, false );
-			document.addEventListener( 'mozfullscreenchange', fullscreenchange, false );
-			element.requestFullscreen = element.requestFullscreen || 
-										element.mozRequestFullscreen || 
-										element.mozRequestFullScreen || 
-										element.webkitRequestFullscreen;
-			element.requestFullscreen();
-		} else {
-			element.requestPointerLock();
+			}, false );
+
+		} else { // the browser does not support pointerlock
+			// set modal text
+			document.getElementById( 'modalText' ).innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API.';
+			// disable button
+			document.getElementById( 'modalButton' ).disabled = true;
 		}
-	}, false );
-	
-} else { // the browser does not support pointerlock
-	// set modal text
-	document.getElementById( 'modalText' ).innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API.';
-	// disable button
-	document.getElementById( 'modalButton' ).disabled = true;
-}
 
-/*
-var bulletGeometry = new THREE.BoxGeometry(0.5,0.5,0.5);
-var bulletMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF, side: THREE.DoubleSide } );
-var bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+		/*
+		var bulletGeometry = new THREE.BoxGeometry(0.5,0.5,0.5);
+		var bulletMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFFFF, side: THREE.DoubleSide } );
+		var bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
 
-function shootingAnimation(origin, destination) {
-	var distance = origin.distanceTo(destination);
-	var speed = 700 // units/second
-	var newBullet = bullet.clone();
-	newBullet.position.copy(origin);
-	scene.add(newBullet);
-	var bulletTween = new TWEEN.Tween(newBullet.position)
-        .to({x: destination.x, y: destination.y, z: destination.z}, (distance/speed)*1000)
-        .onComplete(function(){ scene.remove(newBullet) })
-        .start();
-}
-*/
+		function shootingAnimation(origin, destination) {
+		var distance = origin.distanceTo(destination);
+		var speed = 700 // units/second
+		var newBullet = bullet.clone();
+		newBullet.position.copy(origin);
+		scene.add(newBullet);
+		var bulletTween = new TWEEN.Tween(newBullet.position)
+		.to({x: destination.x, y: destination.y, z: destination.z}, (distance/speed)*1000)
+		.onComplete(function(){ scene.remove(newBullet) })
+		.start();
+	}
+	*/
 
 
-function shootingAnimation(origin, destination) {
+	function shootingAnimation(origin, destination) {
 
-	var lineGeometry = new THREE.Geometry();
-	var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 10, transparent: true, opacity: 1 } );
-	lineGeometry.vertices.push(origin, destination);
-	var line = new THREE.Line(lineGeometry, lineMaterial);
-	scene.add(line);
-	
-	var shootingTween = new TWEEN.Tween(line.material)
-        .to({opacity: 0}, 0.15*1000)
-        .easing( TWEEN.Easing.Cubic.In )
-        .onComplete(function(){ scene.remove(line) })
-        .start();
-}
+		var lineGeometry = new THREE.Geometry();
+		var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 10, transparent: true, opacity: 1 } );
+		lineGeometry.vertices.push(origin, destination);
+		var line = new THREE.Line(lineGeometry, lineMaterial);
+		scene.add(line);
+
+		var shootingTween = new TWEEN.Tween(line.material)
+		.to({opacity: 0}, 0.15*1000)
+		.easing( TWEEN.Easing.Cubic.In )
+		.onComplete(function(){ scene.remove(line); })
+		.start();
+	}
 
 
-// initialize modal, auto-show on initialization
-$('#modalWindow').modal({
-	backdrop: false,
-	keyboard: false,
-	show: true
-});
-
-init();
-animate();
-
-function init() {
-
-	renderer = new THREE.WebGLRenderer({ antialias: true });
-	renderer.setClearColor( 0xDDE8EC );
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.shadowMapEnabled = false;
-
-	// fps stats
-	stats0 = new Stats();
-	stats0.setMode(0);
-	stats0.domElement.style.position = 'absolute';
-	stats0.domElement.style.right = '0px';
-	stats0.domElement.style.bottom = '201px';
-	document.body.appendChild( stats0.domElement );
-
-	// ms stats
-	stats1 = new Stats();
-	stats1.setMode(1);
-	stats1.domElement.style.position = 'absolute';
-	stats1.domElement.style.right = '0px';
-	stats1.domElement.style.bottom = '153px';
-	document.body.appendChild( stats1.domElement );
-
-	// webGLrenderer stats using THREEx library
-	rendererStats = new THREEx.RendererStats();
-	rendererStats.domElement.style.position = 'absolute';
-	rendererStats.domElement.style.right = '0px';
-	rendererStats.domElement.style.bottom = '0px';
-	document.body.appendChild( rendererStats.domElement );
-
-	var ratio = window.innerWidth / window.innerHeight;
-	camera = new THREE.PerspectiveCamera( 45, ratio, 1, 1000 );
-
-	scene = new THREE.Scene();
-
-	controls = new THREE.PointerLockControls( camera, {
-		collisionsEnabled: true,
-		obstaclesArray: obstacles
+	// initialize modal, auto-show on initialization
+	$('#modalWindow').modal({
+		backdrop: false,
+		keyboard: false,
+		show: true
 	});
-	player = new Player( { controls: controls } );
-	scene.add( player.getObject3D() );
 
-	// automatic window resizer using THREEx library
-	var winResize = new THREEx.WindowResize(renderer, camera);
-	
-	document.body.appendChild( renderer.domElement );
-}
+	init();
+	animate();
 
-function animate() {
-	requestAnimationFrame( animate );
-	
-	TWEEN.update();
-	
-	stats0.update();
-	stats1.update();
-	rendererStats.update(renderer);
-	
-	controls.update();
-	renderer.render( scene, camera );
-}
+	function init() {
+
+		renderer = new THREE.WebGLRenderer({ antialias: true });
+		renderer.setClearColor( 0xDDE8EC );
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.shadowMapEnabled = false;
+
+		// fps stats
+		stats0 = new Stats();
+		stats0.setMode(0);
+		stats0.domElement.style.position = 'absolute';
+		stats0.domElement.style.right = '0px';
+		stats0.domElement.style.bottom = '201px';
+		document.body.appendChild( stats0.domElement );
+
+		// ms stats
+		stats1 = new Stats();
+		stats1.setMode(1);
+		stats1.domElement.style.position = 'absolute';
+		stats1.domElement.style.right = '0px';
+		stats1.domElement.style.bottom = '153px';
+		document.body.appendChild( stats1.domElement );
+
+		// webGLrenderer stats using THREEx library
+		rendererStats = new THREEx.RendererStats();
+		rendererStats.domElement.style.position = 'absolute';
+		rendererStats.domElement.style.right = '0px';
+		rendererStats.domElement.style.bottom = '0px';
+		document.body.appendChild( rendererStats.domElement );
+
+		var ratio = window.innerWidth / window.innerHeight;
+		camera = new THREE.PerspectiveCamera( 45, ratio, 1, 1000 );
+
+		scene = new THREE.Scene();
+
+		controls = new THREE.PointerLockControls( camera, {
+			collisionsEnabled: true,
+			obstaclesArray: obstacles
+		});
+		player = new Player( { controls: controls } );
+		scene.add( player.getObject3D() );
+
+		// automatic window resizer using THREEx library
+		var winResize = new THREEx.WindowResize(renderer, camera);
+
+		document.body.appendChild( renderer.domElement );
+	}
+
+	function animate() {
+		requestAnimationFrame( animate );
+
+		TWEEN.update();
+
+		stats0.update();
+		stats1.update();
+		rendererStats.update(renderer);
+
+		controls.update();
+		renderer.render( scene, camera );
+	}

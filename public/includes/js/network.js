@@ -8,7 +8,7 @@ socket.on('connect', function() {
 socket.on('gameInitialization', function(data) {
 	var playersData = data.playersData;
 
-	for (id in playersData) {
+	for (var id in playersData) {
 		var playerData = playersData[id];
 		initPlayer(playerData);
 		console.log(playerData.nickname+' is already in the game.');
@@ -38,7 +38,7 @@ socket.on('playerMoved', function(data) {
 
 socket.on('playerShooted', function(data) {
 	var shooterId = data.shooterId;
-	var impactPoint = new THREE.Vector3(data.impactPoint.x, data.impactPoint.y, data.impactPoint.z);;
+	var impactPoint = new THREE.Vector3(data.impactPoint.x, data.impactPoint.y, data.impactPoint.z);
 	if (typeof data.shootedDetails === 'undefined') { // miss
 		console.log(players[shooterId].playerData.nickname+' shooted to nobody.');
 	} else { // hit
@@ -64,7 +64,7 @@ var initPlayer = function(playerData) {
 	obstacles.push(newPlayer.playerModel.body);
 	obstacles.push(newPlayer.playerModel.head);
 	scene.add(newPlayer.getObject3D());
-}
+};
 
 eventManager.on('updateRototranslation', function() {
 	socket.emit('updateRototranslation', { playerData: player.playerData } );
